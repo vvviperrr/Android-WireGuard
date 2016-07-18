@@ -76,9 +76,6 @@ public class WgService extends VpnService {
         // extract connection info
         mConnectionInfo = ConnectionInfo.fromBundle(extras);
 
-        // print info
-        mConnectionInfo.toLog();
-
         if (!Native.connect()) {
             //TODO notify client
             Log.e(TAG, "connection started error");
@@ -88,14 +85,13 @@ public class WgService extends VpnService {
         Builder builder = new Builder();
         builder.setConfigureIntent(null);
 
-        // REMOVE!!!
-        String ipAddr = "192.168.177.10";
-        String[] dnsServers = new String[]{"8.8.8.8"};
-
         try {
+            /*
+            TODO: set mtu and domain
             builder.setMtu(mConnectionInfo.mtu());
             builder.addSearchDomain(mConnectionInfo.domain());
-            builder.setSession(mConnectionInfo.serverIp());
+            */
+            builder.setSession("WireGuard");
         } catch (Exception e) {
             // bad config
             //TODO: notify client
@@ -103,14 +99,15 @@ public class WgService extends VpnService {
         }
 
         try {
-            Log.i(TAG, "ipAddr = " + ipAddr);
-            builder.addAddress(ipAddr, 32);
+            builder.addAddress(mConnectionInfo.interfaceIp(), 32);
         } catch (Exception e) {
             // bad client ip address
             //TODO: notify client
             Log.e(TAG, e.getMessage());
         }
 
+        /*
+        TODO: set dns
         try {
             if (dnsServers.length > 0) {
                 // use server dns
@@ -119,17 +116,18 @@ public class WgService extends VpnService {
                     builder.addDnsServer(dns);
                 }
             } else {
-                // use client dns
-                builder.addDnsServer(mConnectionInfo.primaryDns());
-                builder.addDnsServer(mConnectionInfo.secondaryDns());
+                builder.addDnsServer();
+                builder.addDnsServer();
             }
         } catch (Exception e) {
             // bad dns
             //TODO: notify client
             Log.e(TAG, e.getMessage());
         }
+        */
 
         /*
+        TODO: set routes
         try {
             for (String route : routes) {
                 Log.i(TAG, "route = " + route.destIp + "/" + route.prefixLen);
@@ -150,25 +148,6 @@ public class WgService extends VpnService {
             // cannot establish connection
             //TODO: notify client
             Log.e(TAG, e.getMessage());
-        }
-
-        // store connection info
-        if (mConnectionInfo != null) {
-            /*
-            String[] routesList = new String[routes.length];
-            for (int i = 0; i < routes.length; i++) {
-                routesList[i] = routes[i].destIp + "/" + routes[i].prefixLen;
-            }
-            mConnectionInfo.setRoutes(routesList);
-            */
-            mConnectionInfo.setVirtualAddr(ipAddr);
-
-            if (dnsServers.length > 0) {
-                mConnectionInfo.setPrimaryDns(dnsServers[0]);
-                if (dnsServers.length > 1) {
-                    mConnectionInfo.setSecondaryDns(dnsServers[1]);
-                }
-            }
         }
 
         // set connection time

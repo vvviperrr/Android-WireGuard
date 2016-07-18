@@ -24,4 +24,179 @@
         android:id="@+id/status_textview"
         android:layout_below="@+id/toggle_vpn_button"
         android:layout_centerHorizontal="true" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent" >
+        <LinearLayout
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="interface address"
+                android:labelFor="@+id/ip_address"/>
+
+            <TextView
+                android:id="@+id/ip_address"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="listen port"
+                android:labelFor="@+id/listen_port"/>
+
+            <TextView
+                android:id="@+id/listen_port"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="bytes sent"
+                android:labelFor="@+id/bytes_sent"/>
+
+            <TextView
+                android:id="@+id/bytes_sent"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="0dp"
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="bytes received"
+                android:labelFor="@+id/bytes_received"/>
+
+            <TextView
+                android:id="@+id/bytes_received"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingTop="0dp"
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="bytes dropped"
+                android:labelFor="@+id/bytes_dropped"/>
+
+            <TextView
+                android:id="@+id/bytes_dropped"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+                <!--Packets sent info-->
+        <LinearLayout
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="packets sent"
+                android:labelFor="@+id/packets_sent"/>
+
+            <TextView
+                android:id="@+id/packets_sent"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <!--Packets received info-->
+        <LinearLayout
+            android:paddingTop="0dp"
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="packets received"
+                android:labelFor="@+id/packets_received"/>
+
+            <TextView
+                android:id="@+id/packets_received"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+        <!--Packets dropped info-->
+        <LinearLayout
+            android:paddingTop="0dp"
+            style="@style/StatisticsItemLayoutStyle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="packets dropped"
+                android:labelFor="@+id/packets_dropped"/>
+
+            <TextView
+                android:id="@+id/packets_dropped"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
 </RelativeLayout>

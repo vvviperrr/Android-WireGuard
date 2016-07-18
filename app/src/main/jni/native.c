@@ -77,10 +77,21 @@ Java_io_wireguard_Native_sessionStat(JNIEnv *env, jclass type)
 
 	jobject ret;
 
+    static jlong pt = 0, pr = 0, pd = 0;
+    static jlong bt = 0, br = 0, bd = 0;
+
 	ret = (*env)->NewObject(env, module.sessionStatClass, module.sessionStatCtor,
-							10, 20, 1,
-							300, 500, 20
+                            pt, pr, pd,
+                            bt, br, bd
 	);
+
+    pt += 2;
+    pr += 3;
+    pd += 1;
+
+    bt += 15;
+    br += 25;
+    bd += 5;
 
     return ret;
 }
