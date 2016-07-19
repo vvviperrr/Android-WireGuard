@@ -99,7 +99,7 @@ public class WgService extends VpnService {
         }
 
         try {
-            builder.addAddress(mConnectionInfo.interfaceIp(), 32);
+            builder.addAddress(mConnectionInfo.iface().interfaceIp(), 32);
         } catch (Exception e) {
             // bad client ip address
             //TODO: notify client

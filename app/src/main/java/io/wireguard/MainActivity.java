@@ -1,6 +1,7 @@
 package io.wireguard;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -41,9 +42,25 @@ public class MainActivity extends WgActivityBase {
             @Override
             public void onClick(View view) {
                 if (connectionStatus() != ConnectionStatus.CONNECTED) {
+
+                    ConnectionInfo.Interface iface = new ConnectionInfo.Interface();
+                    iface.setInterfaceIp("192.168.177.15");
+                    iface.setListenPort(55555);
+                    iface.setPrivateKey("aabbccddee...");
+
+                    ConnectionInfo.Peer peer1 = new ConnectionInfo.Peer();
+                    peer1.setPublicKey("peer1_public_key");
+
+                    ConnectionInfo.Peer peer2 = new ConnectionInfo.Peer();
+                    peer2.setEndpointIp("89.169.163.10");
+                    peer2.setEndpointPort(44444);
+                    peer2.setPublicKey("peer2_public_key");
+
                     ConnectionInfo conn = new ConnectionInfo();
-                    conn.setInterfaceIp("192.168.177.15");
-                    conn.setListenPort(55555);
+                    conn.setInterface(iface);
+                    conn.addPeer(peer1);
+                    conn.addPeer(peer2);
+
                     connect(conn);
                 } else {
                     disconnect();
@@ -65,8 +82,18 @@ public class MainActivity extends WgActivityBase {
     @Override
     protected void onConnectionInfo(ConnectionInfo info) {
         if (info != null) {
-            ip_textview.setText(info.interfaceIp());
-            listen_port_view.setText(Integer.toString(info.listenPort()));
+            ip_textview.setText(info.iface().interfaceIp());
+            listen_port_view.setText(Integer.toString(info.iface().listenPort()));
+
+            for (ConnectionInfo.Peer p : info.peers()) {
+                Log.w("MainActivity", p.publicKey());
+                if (p.endpointIp() != null) {
+                    Log.w("MainActivity", p.endpointIp());
+                    Log.w("MainActivity", Integer.toString(p.endpointPort()));
+                }
+                Log.w("MainActivity", "--------------------------------------");
+            }
+
         } else {
             ip_textview.setText("");
             listen_port_view.setText("");
