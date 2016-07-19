@@ -8,28 +8,29 @@
 static struct {
     jclass sessionStatClass;
     jmethodID sessionStatCtor;
+    int tun_fd;
 } module;
 
 static bool create_session_stat(JNIEnv* env)
 {
     jclass tmp;
 
-	tmp = (*env)->FindClass(env, "io/wireguard/SessionStat");
-	if (!tmp) {
-		LOGE("create_session_stat: Could not find SessionStat class");
-		(*env)->ExceptionClear(env);
-		return false;
-	}
+    tmp = (*env)->FindClass(env, "io/wireguard/SessionStat");
+    if (!tmp) {
+        LOGE("create_session_stat: Could not find SessionStat class");
+        (*env)->ExceptionClear(env);
+        return false;
+    }
 
     module.sessionStatClass = (*env)->NewGlobalRef(env, tmp);
-	module.sessionStatCtor = (*env)->GetMethodID(env, module.sessionStatClass, "<init>", "(JJJJJJ)V");
-	if (!module.sessionStatCtor) {
-		LOGE("create_session_stat: Could not find SessionStat constructor");
-		(*env)->ExceptionClear(env);
-		return false;
-	}
+    module.sessionStatCtor = (*env)->GetMethodID(env, module.sessionStatClass, "<init>", "(JJJJJJ)V");
+    if (!module.sessionStatCtor) {
+        LOGE("create_session_stat: Could not find SessionStat constructor");
+        (*env)->ExceptionClear(env);
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 jint JNI_OnLoad(JavaVM *jvm, void *reserved)
@@ -43,9 +44,11 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved)
         return JNI_ERR;
     }
 
-	if (!create_session_stat(env)) {
-		return JNI_ERR;
-	}
+    module.tun_fd = -1;
+
+    if (!create_session_stat(env)) {
+        return JNI_ERR;
+    }
 
     return JNI_VERSION_1_6;
 }
@@ -75,15 +78,14 @@ Java_io_wireguard_Native_sessionStat(JNIEnv *env, jclass type)
 {
     LOGV(__func__);
 
-	jobject ret;
+    jobject ret;
 
     static jlong pt = 0, pr = 0, pd = 0;
     static jlong bt = 0, br = 0, bd = 0;
 
-	ret = (*env)->NewObject(env, module.sessionStatClass, module.sessionStatCtor,
-                            pt, pr, pd,
-                            bt, br, bd
-	);
+    ret = (*env)->NewObject(env, module.sessionStatClass, module.sessionStatCtor,
+            pt, pr, pd,
+            bt, br, bd);
 
     pt += 2;
     pr += 3;
@@ -95,3 +97,4 @@ Java_io_wireguard_Native_sessionStat(JNIEnv *env, jclass type)
 
     return ret;
 }
+

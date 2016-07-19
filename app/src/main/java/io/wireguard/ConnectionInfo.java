@@ -11,13 +11,10 @@ public class ConnectionInfo {
 
     private String mIfaceIp = null;
     private int mListenPort = 0;
-
     private long mConnectionTime = 0;
-
 
     public void setInterfaceIp(String ip) { mIfaceIp = ip; }
     public void setListenPort(int port) { mListenPort = port; }
-
     public void setConnectionTime(long time) { mConnectionTime = time; }
 
     public String interfaceIp() { return mIfaceIp; }
@@ -32,7 +29,6 @@ public class ConnectionInfo {
         Bundle ret = new Bundle();
         ret.putString(STORED_IP, info.interfaceIp());
         ret.putInt(STORED_PORT, info.listenPort());
-
         ret.putLong(STORED_TIME, info.connectionTime());
 
         return ret;
