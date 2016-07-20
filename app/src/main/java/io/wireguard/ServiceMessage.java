@@ -1,7 +1,7 @@
 package io.wireguard;
 
 public enum ServiceMessage {
-    CONNECTION_STATUS,
+    SERVICE_STATUS,
     CONNECTION_INFO,
     SESSION_STAT;
 }

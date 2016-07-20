@@ -41,7 +41,7 @@ public class MainActivity extends WgActivityBase {
         toggle_vpn_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (connectionStatus() != ConnectionStatus.CONNECTED) {
+                if (serviceStatus() != ServiceStatus.ENABLED) {
 
                     ConnectionInfo.Interface iface = new ConnectionInfo.Interface();
                     iface.setInterfaceIp("192.168.177.15");
@@ -64,22 +64,22 @@ public class MainActivity extends WgActivityBase {
                     conn.addPeer(peer1);
                     conn.addPeer(peer2);
 
-                    connect(conn);
+                    enableService(conn);
                 } else {
-                    disconnect();
+                    disableService();
                 }
                 onConnectionInfo(null);
                 onSessionStat(null);
             }
         });
 
-        onConnectionStatus(ConnectionStatus.DISCONNECTED);
+        onServiceStatus(ServiceStatus.DISABLED);
     }
 
     @Override
-    protected void onConnectionStatus(ConnectionStatus status) {
+    protected void onServiceStatus(ServiceStatus status) {
         status_textview.setText(status.toString());
-        toggle_vpn_button.setText(status == ConnectionStatus.CONNECTED ? "STOP" : "START");
+        toggle_vpn_button.setText(status == ServiceStatus.ENABLED ? "STOP" : "START");
     }
 
     @Override

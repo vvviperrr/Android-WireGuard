@@ -19,7 +19,7 @@ public class WgService extends VpnService {
     private ParcelFileDescriptor mInterface = null;
 
     private ConnectionInfo mConnectionInfo = null;
-    private ConnectionStatus mConnectionStatus = ConnectionStatus.DISCONNECTED;
+    private ServiceStatus mServiceStatus = ServiceStatus.DISABLED;
 
     private Messenger mClient = null;
     private final Messenger mMessenger = new Messenger(new IncomingHandler(this));
@@ -48,14 +48,14 @@ public class WgService extends VpnService {
             return START_NOT_STICKY;
         }
 
-        connect(intent.getExtras());
+        enableService(intent.getExtras());
         return START_NOT_STICKY;
     }
 
     @Override
     public void onRevoke() {
         Log.i(TAG, "onRevoke called");
-        disconnect();
+        disableService();
     }
 
     @Override
@@ -64,11 +64,11 @@ public class WgService extends VpnService {
         return mBinder;
     }
 
-    public void connect(Bundle extras) {
-        Log.i(TAG, "connect");
+    public void enableService(Bundle extras) {
+        Log.i(TAG, "enableService");
 
-        if (mConnectionStatus != ConnectionStatus.DISCONNECTED) {
-            Log.e(TAG, "still not disconnected!");
+        if (mServiceStatus != ServiceStatus.DISABLED) {
+            Log.e(TAG, "still not disabled!");
             //TODO; notify caller
             return;
         }
@@ -76,7 +76,7 @@ public class WgService extends VpnService {
         // extract connection info
         mConnectionInfo = ConnectionInfo.fromBundle(extras);
 
-        if (!Native.connect()) {
+        if (!Native.enable()) {
             //TODO notify client
             Log.e(TAG, "connection started error");
             return;
@@ -143,7 +143,7 @@ public class WgService extends VpnService {
         try {
             mInterface = builder.establish();
             Native.setTunFd(mInterface.getFd());
-            setConnectionStatus(ConnectionStatus.CONNECTED);
+            setServiceStatus(ServiceStatus.ENABLED);
         } catch (Exception e) {
             // cannot establish connection
             //TODO: notify client
@@ -160,15 +160,15 @@ public class WgService extends VpnService {
         sendConnectionInfo();
     }
 
-    public void disconnect() {
-        Log.i(TAG, "disconnect");
+    public void disableService() {
+        Log.i(TAG, "disableService");
 
-        if (mConnectionStatus == ConnectionStatus.DISCONNECTED) {
-            Log.w(TAG, "Already disconnected!");
+        if (mServiceStatus == ServiceStatus.DISABLED) {
+            Log.w(TAG, "Already disabled!");
             return;
         }
 
-        Native.disconnect();
+        Native.disable();
 
         if (mInterface != null) {
             try {
@@ -179,7 +179,7 @@ public class WgService extends VpnService {
             }
         }
 
-        setConnectionStatus(ConnectionStatus.DISCONNECTED);
+        setServiceStatus(ServiceStatus.DISABLED);
 
         mConnectionInfo = null;
     }
@@ -187,7 +187,7 @@ public class WgService extends VpnService {
     private void registerClient(Messenger client) {
         mClient = client;
 
-        if (mConnectionStatus == ConnectionStatus.CONNECTED) {
+        if (mServiceStatus == ServiceStatus.ENABLED) {
             mSessionStatThread.start();
         }
     }
@@ -196,8 +196,8 @@ public class WgService extends VpnService {
         mClient = null;
     }
 
-    private void sendConnectionStatus(ConnectionStatus status) {
-        Message msg = Message.obtain(null, ServiceMessage.CONNECTION_STATUS.ordinal());
+    private void sendServiceStatus(ServiceStatus status) {
+        Message msg = Message.obtain(null, ServiceMessage.SERVICE_STATUS.ordinal());
         Bundle b = new Bundle();
         b.putInt("status", status.ordinal());
         msg.setData(b);
@@ -236,9 +236,9 @@ public class WgService extends VpnService {
         }
     }
 
-    private void setConnectionStatus(ConnectionStatus status) {
-        mConnectionStatus = status;
-        sendConnectionStatus(mConnectionStatus);
+    private void setServiceStatus(ServiceStatus status) {
+        mServiceStatus = status;
+        sendServiceStatus(mServiceStatus);
     }
 
     public class LocalBinder extends Binder {
@@ -272,8 +272,8 @@ public class WgService extends VpnService {
             case UNREGISTER_CLIENT:
                 mService.unregisterClient();
                 break;
-            case UPDATE_CONNECTION_STATUS:
-                mService.sendConnectionStatus(mService.mConnectionStatus);
+            case UPDATE_SERVICE_STATUS:
+                mService.sendServiceStatus(mService.mServiceStatus);
                 break;
             case UPDATE_CONNECTION_INFO:
                 mService.sendConnectionInfo();
@@ -281,8 +281,8 @@ public class WgService extends VpnService {
             case UPDATE_SESSION_STAT:
                 mService.sendSessionStat();
                 break;
-            case DISCONNECT:
-                mService.disconnect();
+            case DISABLE_SERVICE:
+                mService.disableService();
                 break;
             default:
                 Log.w(TAG, "unsupported message received: " + msg.what);
@@ -295,7 +295,7 @@ public class WgService extends VpnService {
         private static final int SESSION_STAT_UPDATE_TIMEOUT = 1000;
 
         private boolean isActive() {
-            return mConnectionStatus == ConnectionStatus.CONNECTED && mClient != null;
+            return mServiceStatus == ServiceStatus.ENABLED && mClient != null;
         }
 
         public void start() {

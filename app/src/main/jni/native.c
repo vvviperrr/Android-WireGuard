@@ -54,14 +54,14 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved)
 }
 
 JNIEXPORT jboolean JNICALL
-Java_io_wireguard_Native_connect(JNIEnv *env, jclass type)
+Java_io_wireguard_Native_enable(JNIEnv *env, jclass type)
 {
     LOGV(__func__);
     return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL
-Java_io_wireguard_Native_disconnect(JNIEnv *env, jclass type)
+Java_io_wireguard_Native_disable(JNIEnv *env, jclass type)
 {
     LOGV(__func__);
 }

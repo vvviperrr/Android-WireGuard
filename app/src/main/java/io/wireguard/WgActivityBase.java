@@ -23,7 +23,7 @@ public abstract class WgActivityBase extends Activity {
 
     private Bundle mConnectionExtras = null;
 
-    private ConnectionStatus mLastConnectionStatus = ConnectionStatus.DISCONNECTED;
+    private ServiceStatus mLastServiceStatus = ServiceStatus.DISABLED;
     private ConnectionInfo mLastConnectionInfo = null;
     private SessionStat mLastSessionStat = null;
 
@@ -37,8 +37,8 @@ public abstract class WgActivityBase extends Activity {
         @Override
         public void handleMessage(Message msg) {
             switch (ServiceMessage.values()[msg.what]) {
-            case CONNECTION_STATUS:
-                mBaseActivity.onConnectionStatusMsg(ConnectionStatus.values()[msg.getData().getInt("status")]);
+            case SERVICE_STATUS:
+                mBaseActivity.onServiceStatusMsg(ServiceStatus.values()[msg.getData().getInt("status")]);
                 break;
             case CONNECTION_INFO:
                 mBaseActivity.onConnectionInfoMsg(ConnectionInfo.fromBundle(msg.getData().isEmpty() ? null : msg.getData()));
@@ -66,7 +66,7 @@ public abstract class WgActivityBase extends Activity {
                 Log.e(TAG, e.getMessage());
             }
 
-            updateConnectionStatus();
+            updateServiceStatus();
             updateConnectionInfo();
         }
 
@@ -158,9 +158,9 @@ public abstract class WgActivityBase extends Activity {
         }
     }
 
-    private void onConnectionStatusMsg(ConnectionStatus status) {
-        setConnectionStatus(status);
-        onConnectionStatus(status);
+    private void onServiceStatusMsg(ServiceStatus status) {
+        setServiceStatus(status);
+        onServiceStatus(status);
     }
 
     private void onConnectionInfoMsg(ConnectionInfo info) {
@@ -173,10 +173,10 @@ public abstract class WgActivityBase extends Activity {
         onSessionStat(stat);
     }
 
-    private void setConnectionStatus(ConnectionStatus status) {
-        mLastConnectionStatus = status;
+    private void setServiceStatus(ServiceStatus status) {
+        mLastServiceStatus = status;
 
-        if (mLastConnectionStatus == ConnectionStatus.DISCONNECTED) {
+        if (mLastServiceStatus == ServiceStatus.DISABLED) {
             setConnectionInfo(null);
             setSessionStat(null);
         }
@@ -185,11 +185,11 @@ public abstract class WgActivityBase extends Activity {
     private void setConnectionInfo(ConnectionInfo info) { mLastConnectionInfo = info; }
     private void setSessionStat(SessionStat stat) { mLastSessionStat = stat; }
 
-    public ConnectionStatus connectionStatus() { return mLastConnectionStatus; }
+    public ServiceStatus serviceStatus() { return mLastServiceStatus; }
     public ConnectionInfo connectionInfo() { return mLastConnectionInfo; }
     public SessionStat sessionStat() { return mLastSessionStat; }
 
-    public void connect(ConnectionInfo info) {
+    public void enableService(ConnectionInfo info) {
         if (info == null) {
             Log.e(TAG, "Connection info is null!");
             //TODO: notify caller
@@ -218,9 +218,9 @@ public abstract class WgActivityBase extends Activity {
         }
     }
 
-    public void updateConnectionStatus() {
-        Log.i(TAG, "updateConnectionStatus");
-        send(Message.obtain(null, ClientMessage.UPDATE_CONNECTION_STATUS.ordinal()));
+    public void updateServiceStatus() {
+        Log.i(TAG, "updateServiceStatus");
+        send(Message.obtain(null, ClientMessage.UPDATE_SERVICE_STATUS.ordinal()));
     }
 
     public void updateConnectionInfo() {
@@ -233,12 +233,12 @@ public abstract class WgActivityBase extends Activity {
         send(Message.obtain(null, ClientMessage.UPDATE_SESSION_STAT.ordinal()));
     }
 
-    public void disconnect() {
-        Log.i(TAG, "disconnect");
-        send(Message.obtain(null, ClientMessage.DISCONNECT.ordinal()));
+    public void disableService() {
+        Log.i(TAG, "disableService");
+        send(Message.obtain(null, ClientMessage.DISABLE_SERVICE.ordinal()));
     }
 
-    protected abstract void onConnectionStatus(ConnectionStatus status);
+    protected abstract void onServiceStatus(ServiceStatus status);
     protected abstract void onConnectionInfo(ConnectionInfo info);
     protected abstract void onSessionStat(SessionStat stat);
 }
