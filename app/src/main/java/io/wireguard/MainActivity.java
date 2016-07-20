@@ -50,11 +50,14 @@ public class MainActivity extends WgActivityBase {
 
                     ConnectionInfo.Peer peer1 = new ConnectionInfo.Peer();
                     peer1.setPublicKey("peer1_public_key");
+                    peer1.addAllowedIp("0.0.0.0", 0);
 
                     ConnectionInfo.Peer peer2 = new ConnectionInfo.Peer();
                     peer2.setEndpointIp("89.169.163.10");
                     peer2.setEndpointPort(44444);
                     peer2.setPublicKey("peer2_public_key");
+                    peer2.addAllowedIp("192.168.177.1", 32);
+                    peer2.addAllowedIp("192.168.154.0", 24);
 
                     ConnectionInfo conn = new ConnectionInfo();
                     conn.setInterface(iface);
@@ -91,6 +94,11 @@ public class MainActivity extends WgActivityBase {
                     Log.w("MainActivity", p.endpointIp());
                     Log.w("MainActivity", Integer.toString(p.endpointPort()));
                 }
+
+                for (ConnectionInfo.Peer.AllowedIp i : p.allowedIps()) {
+                    Log.w("MainActivity", String.format("allowed_ip = %s/%d", i.ip(), i.cidr()));
+                }
+
                 Log.w("MainActivity", "--------------------------------------");
             }
 

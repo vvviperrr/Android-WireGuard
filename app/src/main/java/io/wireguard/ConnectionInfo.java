@@ -7,7 +7,6 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 public class ConnectionInfo {
-    private static final String prefix = ConnectionInfo.class.getPackage().getName();
 
     /* FIXME: !!! protect private_key !!!! */
     public static class Interface implements Parcelable {
@@ -57,9 +56,55 @@ public class ConnectionInfo {
     }
 
     public static class Peer implements Parcelable {
+
+        public static class AllowedIp implements Parcelable {
+            private String mIp = null;
+            private int mCidr = 0;
+
+            public AllowedIp(String ip, int cidr) {
+                this.mIp = ip;
+                this.mCidr = cidr;
+            }
+
+            protected AllowedIp(Parcel in) {
+                mIp = in.readString();
+                mCidr = in.readInt();
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(mIp);
+                dest.writeInt(mCidr);
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            public static final Creator<AllowedIp> CREATOR = new Creator<AllowedIp>() {
+                @Override
+                public AllowedIp createFromParcel(Parcel in) {
+                    return new AllowedIp(in);
+                }
+
+                @Override
+                public AllowedIp[] newArray(int size) {
+                    return new AllowedIp[size];
+                }
+            };
+
+            public void setIp(String ip) { mIp = ip; }
+            public void setCidr(int cidr) { mCidr = cidr; }
+
+            public String ip() { return mIp; }
+            public int cidr() { return mCidr; }
+        }
+
         private String mPublicKey = null;
         private String mEndpointIp = null;
         private int mEndpointPort = 0;
+        private ArrayList<AllowedIp> mAllowedIps = new ArrayList<>();
 
         public Peer() {}
 
@@ -67,6 +112,7 @@ public class ConnectionInfo {
             mPublicKey = in.readString();
             mEndpointIp = in.readString();
             mEndpointPort = in.readInt();
+            in.readTypedList(mAllowedIps, AllowedIp.CREATOR);
         }
 
         public static final Creator<Peer> CREATOR = new Creator<Peer>() {
@@ -84,10 +130,12 @@ public class ConnectionInfo {
         public void setPublicKey(String key) { mPublicKey = key; }
         public void setEndpointIp(String ip) { mEndpointIp = ip; }
         public void setEndpointPort(int port) { mEndpointPort = port; }
+        public void addAllowedIp(String ip, int cidr) { mAllowedIps.add(new AllowedIp(ip, cidr)); }
 
         public String publicKey() { return mPublicKey; }
         public String endpointIp() { return mEndpointIp; }
         public int endpointPort() { return mEndpointPort; }
+        public ArrayList<AllowedIp> allowedIps() { return mAllowedIps; }
 
         @Override
         public int describeContents() {
@@ -99,9 +147,11 @@ public class ConnectionInfo {
             parcel.writeString(mPublicKey);
             parcel.writeString(mEndpointIp);
             parcel.writeInt(mEndpointPort);
+            parcel.writeTypedList(mAllowedIps);
         }
     }
 
+    private static final String prefix = ConnectionInfo.class.getPackage().getName();
     private static final String STORED_IINTERFACE = prefix + ".INTERFACE";
     private static final String STORED_PEERS = prefix + ".PEERS";
     private static final String STORED_TIME = prefix + ".TIME";
